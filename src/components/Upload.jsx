@@ -9,10 +9,11 @@ import {
     getDownloadURL,
   } from "firebase/storage";
 import app from '../firebase'
-import io from 'socket.io-client';
-import { current } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
+import io from 'socket.io-client';
 var socket, selectedChatCompare;
+
+
 axios.defaults.withCredentials = true;
 
 const Container = styled.div`
@@ -87,7 +88,7 @@ const Upload = ({ setOpen }) => {
     var type = 0;
 
     useEffect(() => {
-      const ENDPOINT = 'https://mern-clonetube.herokuapp.com/';
+      const ENDPOINT = 'http://localhost:5000';
         socket = io(ENDPOINT);
     })
 
@@ -145,7 +146,7 @@ const Upload = ({ setOpen }) => {
   
     const handleUpload = async (e)=>{
       e.preventDefault();
-      const res = await axios.post("https://mern-clonetube.herokuapp.com/api/videos", {...inputs, tags})
+      const res = await axios.post("http://localhost:5000/api/videos", {...inputs, tags})
       console.log(res.data._id);
       socket.emit('NewVideo', currentUser.name, res.data._id, currentUser.subscribers, type = 4);
       setOpen(false)

@@ -8,7 +8,6 @@ import Comments from "../components/Comments";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import Card from "../components/Card";
-import me from '../img/me.jpg';
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
@@ -169,20 +168,20 @@ const Video = () => {
   const dispatch = useDispatch();
   var type = 0;
   const path = useLocation().pathname.split("/")[2];
-
+  console.log(path);
   const [channel, setChannel] = useState({});
 
   useEffect(() => {
-    const ENDPOINT = 'https://mern-clonetube.herokuapp.com/';
+    const ENDPOINT = 'http://localhost:5000';
       socket = io(ENDPOINT);
   })
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const videoRes = await axios.get(`https://mern-clonetube.herokuapp.com/api/videos/find/${path}`);
+        const videoRes = await axios.get(`http://localhost:5000/api/videos/find/${path}`);
         const channelRes = await axios.get(
-          `https://mern-clonetube.herokuapp.com/api/users/find/${videoRes.data.userId}`
+          `http://localhost:5000/api/users/find/${videoRes.data.userId}`
         );
         setChannel(channelRes.data);
         dispatch(fetchSuccess(videoRes.data));
@@ -192,20 +191,20 @@ const Video = () => {
   }, [path, dispatch]);
 
   const handleLike = async () => {
-    await axios.put(`https://mern-clonetube.herokuapp.com/api/users/like/${currentVideo._id}`);
+    await axios.put(`http://localhost:5000/api/users/like/${currentVideo._id}`);
     dispatch(like(currentUser._id));
     socket.emit('NewNotification', channel._id, currentUser._id, currentUser.name, currentVideo._id, type = 3, currentUser.subscribers);
   };
   const handleDislike = async () => {
-    await axios.put(`https://mern-clonetube.herokuapp.com/api/users/dislike/${currentVideo._id}`);
+    await axios.put(`http://localhost:5000/api/users/dislike/${currentVideo._id}`);
     dispatch(dislike(currentUser._id));
   };
 
   const handleSub = async () => {
     currentUser.subscribedUsers.includes(channel._id)
-      ? await axios.put(`https://mern-clonetube.herokuapp.com/api/users/unsub/${channel._id}`)
+      ? await axios.put(`http://localhost:5000/api/users/unsub/${channel._id}`)
       :
-      await axios.put(`https://mern-clonetube.herokuapp.com/api/users/sub/${channel._id}`)
+      await axios.put(`http://localhost:5000/api/users/sub/${channel._id}`)
       dispatch(subscription(channel._id));
     if(!currentUser.subscribedUsers.includes(channel._id)){
       socket.emit('NewNotification', channel._id, currentUser._id, currentUser.name, currentVideo._id, type = 1, currentUser.subscribers);
@@ -215,62 +214,68 @@ const Video = () => {
   //TODO: DELETE VIDEO FUNCTIONALITY
 
   return (
+  <>
     <Container>
-      <Content>
-        <VideoWrapper>
-          <VideoFrame src={currentVideo.videoUrl} controls />
-        </VideoWrapper>
-        <Title>{currentVideo.title}</Title>
-        <Details>
-          <Info>
-            {currentVideo.views} views • {format(currentVideo.createdAt)}
-          </Info>
-          <Buttons>
-            <Button onClick={handleLike}>
-              {currentVideo.likes?.includes(currentUser?._id) ? (
-                <ThumbUpIcon />
-              ) : (
-                <ThumbUpOutlinedIcon />
-              )}{" "}
-              {currentVideo.likes?.length}
-            </Button>
-            <Button onClick={handleDislike}>
-              {currentVideo.dislikes?.includes(currentUser?._id) ? (
-                <ThumbDownIcon />
-              ) : (
-                <ThumbDownOffAltOutlinedIcon />
-              )}{" "}
-              Dislike
-            </Button>
-            <Button>
-              <ReplyOutlinedIcon /> Share
-            </Button>
-            <Button>
-              <AddTaskOutlinedIcon /> Save
-            </Button>
-          </Buttons>
-        </Details>
-        <Hr />
-        <Channel>
-          <ChannelInfo>
-            <Image src={channel.img} />
-            <ChannelDetail>
-              <ChannelName>{channel.name}</ChannelName>
-              <ChannelCounter>{channel.subscribers?.length} subscribers</ChannelCounter>
-              <Description>{currentVideo.desc}</Description>
-            </ChannelDetail>
-          </ChannelInfo>
-          <Subscribe onClick={handleSub}>
-            {currentUser.subscribedUsers?.includes(channel._id)
-              ? "SUBSCRIBED"
-              : "SUBSCRIBE"}
-          </Subscribe>
-        </Channel>
-        <Hr />
-        <Comments videoId={currentVideo._id} />
-      </Content>
-      <Recommendation tags={currentVideo.tags} />
+      { currentVideo && ( 
+      <>
+        <Content>
+          <VideoWrapper>
+            <VideoFrame src={currentVideo.videoUrl} controls />
+          </VideoWrapper>
+          <Title>{currentVideo.title}</Title>
+          <Details>
+            <Info>
+              {currentVideo.views} views • {format(currentVideo.createdAt)}
+            </Info>
+            <Buttons>
+              <Button onClick={handleLike}>
+                {currentVideo.likes?.includes(currentUser?._id) ? (
+                  <ThumbUpIcon />
+                ) : (
+                  <ThumbUpOutlinedIcon />
+                )}{" "}
+                {currentVideo.likes?.length}
+              </Button>
+              <Button onClick={handleDislike}>
+                {currentVideo.dislikes?.includes(currentUser?._id) ? (
+                  <ThumbDownIcon />
+                ) : (
+                  <ThumbDownOffAltOutlinedIcon />
+                )}{" "}
+                Dislike
+              </Button>
+              <Button>
+                <ReplyOutlinedIcon /> Share
+              </Button>
+              <Button>
+                <AddTaskOutlinedIcon /> Save
+              </Button>
+            </Buttons>
+          </Details>
+          <Hr />
+          <Channel>
+            <ChannelInfo>
+              <Image src={channel.img} />
+              <ChannelDetail>
+                <ChannelName>{channel.name}</ChannelName>
+                <ChannelCounter>{channel.subscribers?.length} subscribers</ChannelCounter>
+                <Description>{currentVideo.desc}</Description>
+              </ChannelDetail>
+            </ChannelInfo>
+            <Subscribe onClick={handleSub}>
+              {currentUser.subscribedUsers?.includes(channel._id)
+                ? "SUBSCRIBED"
+                : "SUBSCRIBE"}
+            </Subscribe>
+          </Channel>
+          <Hr />
+          <Comments videoId={currentVideo._id} />
+        </Content>
+        <Recommendation tags={currentVideo.tags} /> 
+      </>
+      )}
     </Container>
+  </>
   );
 };
 

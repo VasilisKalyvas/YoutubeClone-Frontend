@@ -136,7 +136,7 @@ const Menu = ({ darkMode, setDarkMode }) => {
   const [read, setRead] = useState(false);
 
   useEffect(() => {
-    const ENDPOINT = 'https://mern-clonetube.herokuapp.com/';
+    const ENDPOINT = 'http://localhost:5000';
       socket = io(ENDPOINT);
       if(currentUser){
         socket.emit("addUser", currentUser._id);
@@ -153,7 +153,7 @@ const Menu = ({ darkMode, setDarkMode }) => {
   }
 
   const handleLogout = async () => {
-    await axios.get(`https://mern-clonetube.herokuapp.com/api/auth/logout`, {withCredentials: true}); 
+    await axios.get(`http://localhost:5000/api/auth/logout`, {withCredentials: true}); 
     dispatch(logout());
     localStorage.removeItem('persist:root');
     socket.emit('logout', currentUser._id);

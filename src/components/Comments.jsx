@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import styled from "styled-components";
 import SendIcon from '@mui/icons-material/Send';
 import Comment from "./Comment";
-import me from '../img/me.jpg';
 import io from 'socket.io-client';
 var socket, selectedChatCompare;
 
@@ -46,17 +45,17 @@ const Comments = ({videoId}) => {
   var type = 0;
 
   useEffect(() => {
-    const ENDPOINT = 'https://mern-clonetube.herokuapp.com/';
+    const ENDPOINT = 'http://localhost:5000';
       socket = io(ENDPOINT);
   })
 
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const res = await axios.get(`https://mern-clonetube.herokuapp.com/api/comments/${videoId}`);
-        const videoRes = await axios.get(`https://mern-clonetube.herokuapp.com/api/videos/find/${videoId}`);
+        const res = await axios.get(`http://localhost:5000/api/comments/${videoId}`);
+        const videoRes = await axios.get(`http://localhost:5000/api/videos/find/${videoId}`);
         const channelRes = await axios.get(
-          `https://mern-clonetube.herokuapp.com/api/users/find/${videoRes.data.userId}`
+          `http://localhost:5000/api/users/find/${videoRes.data.userId}`
         );
         setChannel(channelRes.data)
         setComments(res.data);
@@ -70,7 +69,7 @@ const Comments = ({videoId}) => {
   const CreateComment = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`https://mern-clonetube.herokuapp.com/api/comments`, {desc, videoId});
+      const res = await axios.post(`http://localhost:5000/api/comments`, {desc, videoId});
       setComments([...comments, res.data]);
       socket.emit('NewNotification', channel._id, currentUser._id, currentUser.name, videoId, type = 2, currentUser.subscribers);
     } catch (err) {}

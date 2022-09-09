@@ -3,7 +3,7 @@ import React, { useState,  } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch } from 'react-redux';
-import { loginFailure, loginStart, loginSuccess } from "../redux/userSlice";
+import { loginFailure, loginStart, loginSuccess, signupFailure, signupStart, signupSuccess } from "../redux/userSlice";
 
 const Container = styled.div`
   display: flex;
@@ -78,11 +78,23 @@ const SignIn = () => {
     e.preventDefault();
     dispatch(loginStart());
     try {
-      const res = await axios.post("https://mern-clonetube.herokuapp.com/api/auth/signin", { name, password }, {withCredentials: true});
+      const res = await axios.post("http://localhost:5000/api/auth/signin", { name, password }, {withCredentials: true});
       dispatch(loginSuccess(res.data));
       navigate('/');
     } catch (err) {
       dispatch(loginFailure());
+    }
+  };
+ 
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    dispatch(signupStart());
+    try {
+      const res = await axios.post("http://localhost:5000/api/auth/signup", { name, email, password }, {withCredentials: true});
+      dispatch(signupSuccess(res.data));
+      navigate('/');
+    } catch (err) {
+      dispatch(signupFailure());
     }
   };
 
@@ -97,7 +109,7 @@ const SignIn = () => {
         <Input placeholder="username" onChange={(e) => setName(e.target.value)}/>
         <Input placeholder="email" onChange={(e) => setEmail(e.target.value)}/>
         <Input type="password" placeholder="password" onChange={(e) => setPassword(e.target.value)}/>
-        <Button>Sign up</Button>
+        <Button onClick={handleSignUp}>Sign up</Button>
       </Wrapper>
       <More>
         English(USA)

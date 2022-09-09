@@ -33,19 +33,21 @@ function App() {
         <Main>
           <NavBar/>
           <Wrapper>
-            <Routes>
-              <Route index element={<Home type='random'/>} />
-              <Route path='trends' element={<Home type='trend'/>} />
-              <Route path='subscriptions' element={currentUser ? <Home type='sub'/> : <Navigate to='/'/>} />
-              <Route path="search" element={<Search />} />
-              <Route
-                    path="/signin"
-                    element={!currentUser ? <SignIn /> : <Navigate to='/'/>}
+          <Routes>
+                <Route path="/">
+                  <Route index element={<Home type="random" />} />
+                  <Route path="trends" element={<Home type="trend" />} />
+                  <Route path="subscriptions" element={currentUser ? <Home type='sub'/> : <Navigate to='/'/>} />
+                  <Route path="search" element={<Search />} />
+                  <Route
+                    path="signin"
+                    element={currentUser ? <Home /> : <SignIn />}
                   />
-              <Route path="video">
+                  <Route path="video">
                     <Route path=":id" element={<Video />} />
-              </Route>
-            </Routes>
+                  </Route>
+                </Route>
+              </Routes>
           </Wrapper>
         </Main>
       </BrowserRouter>

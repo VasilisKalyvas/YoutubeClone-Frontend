@@ -4,7 +4,6 @@ import styled from "styled-components";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
 import CommentIcon from '@mui/icons-material/Comment';
-import me from '../img/me.jpg';
 
 const Container = styled.div`
   display: flex;
@@ -64,7 +63,7 @@ const Comment = ({comment}) => {
 
   useEffect(() => {
     const fetchComment = async () => {
-      const res = await axios.get(`https://mern-clonetube.herokuapp.com/api/users/find/${comment.userId}`);
+      const res = await axios.get(`http://localhost:5000/api/users/find/${comment.userId}`);
       setChannel(res.data)
     };
     fetchComment();

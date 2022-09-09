@@ -16,7 +16,7 @@ const Home = ({type}) => {
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const res = await axios.get(`https://mern-clonetube.herokuapp.com/api/videos/${type}`, {withCredentials: true});
+      const res = await axios.get(`http://localhost:5000/api/videos/${type}`, {withCredentials: true});
       setVideos(res.data);
     };
     console.log(videos);

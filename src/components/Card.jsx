@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import me from '../img/me.jpg';
 import {format} from 'timeago.js'
 import axios from "axios";
 const Container = styled.div`
@@ -67,10 +66,9 @@ const Card = ({ type , video}) => {
 
   useEffect(() => {
     const fetchChannel = async () => {
-      const res = await axios.get(`https://mern-clonetube.herokuapp.com/api/users/find/${video.userId}`);
+      const res = await axios.get(`http://localhost:5000/api/users/find/${video.userId}`);
       setChannel(res.data);
     };
-    console.log(channel);
     fetchChannel();
   }, [video.userId]);
 
