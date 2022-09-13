@@ -1,14 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import HomeIcon from "@mui/icons-material/Home";
 import ExploreOutlinedIcon from "@mui/icons-material/ExploreOutlined";
 import SubscriptionsOutlinedIcon from "@mui/icons-material/SubscriptionsOutlined";
 import VideoLibraryOutlinedIcon from "@mui/icons-material/VideoLibraryOutlined";
-import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
-import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+import SlideshowIcon from '@mui/icons-material/Slideshow';
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
-import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
-import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import PeopleIcon from '@mui/icons-material/People';
 import SettingsBrightnessOutlinedIcon from "@mui/icons-material/SettingsBrightnessOutlined";
 import YouTubeIcon from '@mui/icons-material/YouTube';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -18,7 +17,7 @@ import { logout } from "../redux/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import io from 'socket.io-client';
-var socket, selectedChatCompare;
+var socket;
 axios.defaults.withCredentials = true;
 
 
@@ -84,21 +83,17 @@ const Hr = styled.hr`
   border: 0.5px solid ${({ theme }) => theme.soft};
 `;
 
-const Login = styled.div``;
-const Button = styled.button`
-  padding: 5px 15px;
-  background-color: transparent;
-  border: 1px solid #3ea6ff;
-  color: #3ea6ff;
-  border-radius: 3px;
-  font-weight: 500;
-  margin-top: 10px;
-  cursor: pointer;
+
+const NotifItem = styled.div`
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 0px;
+  cursor: pointer;
+  padding: 7.5px 0px;
+  &:hover {
+    background-color: ${({ theme }) => theme.soft};
+  }
 `;
-
 const Notification = styled.div`
     display: flex;
     flex-direction: column;
@@ -120,12 +115,36 @@ const Notif = styled.p`
   color: ${({ theme }) => theme.text};
   padding: 10px;
 `;
+
+const NotifNumber = styled.p`
+  position: relative;
+  right: 5px;
+  bottom :10px;
+  color: white;
+  text-align: center;
+  background-color: red;
+  width: 18px;
+  height: 20px;
+  border-radius: 50%;
+
+  @media(max-width: 559px){
+    background-color: inherit;
+    color: red;
+  }
+
+  @media(max-width: 321px){
+    background-color: inherit;
+    color: red;
+  }
+`;
+
 const Avatar = styled.img`
   width: 32px;
   height: 32px;
   border-radius: 50%;
   background-color: #999;
 `;
+
 const Menu = ({ darkMode, setDarkMode }) => {
   const {currentUser} = useSelector(state => state.user)
   const navigate = useNavigate();
@@ -133,7 +152,6 @@ const Menu = ({ darkMode, setDarkMode }) => {
   const [OnlineCount, setOnlineCount] = useState(0);
   const [notification, setNotification] = useState([]);
   const [open, setOpen] = useState(false);
-  const [read, setRead] = useState(false);
 
   useEffect(() => {
     const ENDPOINT = 'http://localhost:5000';
@@ -188,31 +206,60 @@ const Menu = ({ darkMode, setDarkMode }) => {
               <Navs>Subscriptions</Navs>
             </Item>
           </Link>
-          <Item>
-            <NotificationsIcon onClick={HandleNotification} /> {notification.length}
-          </Item></>
+          <Link to={`myvideos/${currentUser._id}`} style={{ textDecoration: "none", color: "inherit" }}>
+            <Item>
+              <SlideshowIcon />
+              <Navs>My Videos</Navs>
+            </Item>
+          </Link>
+          <Link to={`subscribers/${currentUser._id}`} style={{ textDecoration: "none", color: "inherit" }}>
+            <Item>
+              <PeopleIcon />
+              <Navs>My Subscribers</Navs>
+            </Item>
+          </Link>
+          <Link to={`subscriptions/${currentUser._id}`} style={{ textDecoration: "none", color: "inherit" }}>
+            <Item>
+              <GroupAddIcon />
+              <Navs>Subscriptions</Navs>
+            </Item>
+          </Link>
+          { notification.length > 0 
+            ?  <NotifItem>
+                <NotificationsIcon onClick={HandleNotification} /> 
+                <NotifNumber>{notification.length}</NotifNumber>
+                <Navs>Notifications</Navs>
+              </NotifItem>
+            :
+              <Item>
+                <NotificationsIcon onClick={HandleNotification} /> 
+                <Navs>Notifications</Navs>
+              </Item>
+          }
+         
+          </>
           :
           null
         }
         {open && (
         <>
           <Notification>
-            {notification.length == 0 ?
+            {notification.length === 0 ?
             <> <Notif>There is 0 Notifications</Notif></>:<>
             {notification.map((data, i)=> {
-              if(data.type == 1)
+              if(data.type === 1)
               {
                 return <><Notif key={i}><Avatar/>{data.name} just Subscribed your Channel</Notif><Hr/></>
               }
-              if(data.type == 2)
+              if(data.type === 2)
               {
                 return <><Notif  key={i}><Avatar/>{data.name} comment your <Link to={`/video/${data.videoId}`}>video</Link></Notif><Hr/></>
               }
-              if(data.type == 3)
+              if(data.type === 3)
               {
                 return <><Notif  key={i}><Avatar/>{data.name} liked your <Link to={`/video/${data.videoId}`}>video</Link></Notif><Hr/></>
               }
-              if(data.type == 4)
+              if(data.type === 4)
               {
                 return <><Notif  key={i}><Avatar/>{data.name} upload a new <Link to={`/video/${data.videoId}`}>video</Link></Notif><Hr/></>
               }
@@ -225,22 +272,10 @@ const Menu = ({ darkMode, setDarkMode }) => {
           <VideoLibraryOutlinedIcon />
           <Navs>Library</Navs>
         </Item>
-        <Item>
-          <HistoryOutlinedIcon />
-          <Navs>History</Navs>
-        </Item>
         <Hr />
         <Item>
           <SettingsOutlinedIcon />
           <Navs>Settings</Navs>
-        </Item>
-        <Item>
-          <FlagOutlinedIcon />
-          <Navs>Report</Navs>
-        </Item>
-        <Item>
-          <HelpOutlineOutlinedIcon />
-          <Navs>Help</Navs>
         </Item>
         <Item onClick={() => setDarkMode(!darkMode)}>
           <SettingsBrightnessOutlinedIcon />

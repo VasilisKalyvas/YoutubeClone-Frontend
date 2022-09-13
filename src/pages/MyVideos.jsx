@@ -10,26 +10,26 @@ const Container = styled.div`
   flex-wrap: wrap;
 `;
 
-const Home = ({type}) => {
+const MyVideos = () => {
   const [videos, setVideos] = useState([]);
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
     const fetchVideos = async () => {
 
-      const res = await axios.get(`http://localhost:5000/api/videos/${type}`, {withCredentials: true});
+      const res = await axios.get(`http://localhost:5000/api/videos/myvideos/${currentUser._id}`, {withCredentials: true});
       setVideos(res.data);
     };
     fetchVideos();
-  }, [type])
+  })
 
   return (
     <Container>
-      {videos.map((video) => (
+      {videos?.map((video) => (
         <Card key={video._id} video={video}/>
       ))}
     </Container>
   );
 };
 
-export default Home;
+export default MyVideos

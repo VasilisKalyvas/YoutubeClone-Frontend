@@ -10,6 +10,10 @@ import Video from './pages/Video';
 import SignIn from './pages/SignIn';
 import { useSelector } from 'react-redux';
 import Search from './pages/Search';
+import { ToastContextProvider } from './context/ToastContext';
+import MyVideos from './pages/MyVideos';
+import Subscriptions from './pages/Subscriptions';
+import Subscribers from './pages/Subscribers';
 
 const Container = styled.div`
   display: flex;
@@ -27,8 +31,10 @@ function App() {
   
   return (
     <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+      
       <Container>
       <BrowserRouter>
+      <ToastContextProvider>
         <Menu darkMode={darkMode} setDarkMode={setDarkMode}/>
         <Main>
           <NavBar/>
@@ -38,6 +44,9 @@ function App() {
                   <Route index element={<Home type="random" />} />
                   <Route path="trends" element={<Home type="trend" />} />
                   <Route path="subscriptions" element={currentUser ? <Home type='sub'/> : <Navigate to='/'/>} />
+                  <Route path="myvideos/:id" element={currentUser ? <MyVideos/> : <Navigate to='/'/>} />
+                  <Route path="subscriptions/:id" element={currentUser ? <Subscriptions/> : <Navigate to='/'/>} />
+                  <Route path="subscribers/:id" element={currentUser ? <Subscribers/> : <Navigate to='/'/>} />
                   <Route path="search" element={<Search />} />
                   <Route
                     path="signin"
@@ -50,6 +59,7 @@ function App() {
               </Routes>
           </Wrapper>
         </Main>
+       </ToastContextProvider>
       </BrowserRouter>
       </Container>
     </ThemeProvider>

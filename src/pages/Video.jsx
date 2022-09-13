@@ -7,15 +7,14 @@ import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import Comments from "../components/Comments";
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import Card from "../components/Card";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { format } from "timeago.js";
-import { dislike, fetchSuccess, like } from "../redux/videoSlice";
+import { dislike, fetchSuccess, like, view } from "../redux/videoSlice";
 import { subscription } from "../redux/userSlice";
 import io from 'socket.io-client';
-var socket, selectedChatCompare;
+var socket;
 
 axios.defaults.withCredentials = true;
 
@@ -191,9 +190,12 @@ const Video = () => {
   }, [path, dispatch]);
 
   const handleLike = async () => {
-    await axios.put(`http://localhost:5000/api/users/like/${currentVideo._id}`);
-    dispatch(like(currentUser._id));
-    socket.emit('NewNotification', channel._id, currentUser._id, currentUser.name, currentVideo._id, type = 3, currentUser.subscribers);
+      await axios.put(`http://localhost:5000/api/users/like/${currentVideo._id}`);
+      
+      dispatch(like(currentUser._id));
+      if(!currentVideo.likes?.includes(currentVideo._id)){
+      socket.emit('NewNotification', channel._id, currentUser._id, currentUser.name, currentVideo._id, type = 3, currentUser.subscribers);
+    }
   };
   const handleDislike = async () => {
     await axios.put(`http://localhost:5000/api/users/dislike/${currentVideo._id}`);
@@ -201,7 +203,7 @@ const Video = () => {
   };
 
   const handleSub = async () => {
-    currentUser.subscribedUsers.includes(channel._id)
+    currentUser.subscribedUsers?.includes(channel._id)
       ? await axios.put(`http://localhost:5000/api/users/unsub/${channel._id}`)
       :
       await axios.put(`http://localhost:5000/api/users/sub/${channel._id}`)
@@ -211,6 +213,10 @@ const Video = () => {
     }
   };
 
+  const videoView = async (videoId) => {
+    await axios.put(`http://localhost:5000/api/videos/view/${videoId}`);
+    dispatch(view(videoId));
+  }
   //TODO: DELETE VIDEO FUNCTIONALITY
 
   return (
@@ -220,7 +226,7 @@ const Video = () => {
       <>
         <Content>
           <VideoWrapper>
-            <VideoFrame src={currentVideo.videoUrl} controls />
+            <VideoFrame src={currentVideo.videoUrl} controls autoPlay={true}/>
           </VideoWrapper>
           <Title>{currentVideo.title}</Title>
           <Details>

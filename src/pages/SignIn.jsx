@@ -1,9 +1,10 @@
 import axios from "axios";
-import React, { useState,  } from "react";
+import React, { useContext, useState,  } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch } from 'react-redux';
 import { loginFailure, loginStart, loginSuccess, signupFailure, signupStart, signupSuccess } from "../redux/userSlice";
+import ToastContext from "../context/ToastContext";
 
 const Container = styled.div`
   display: flex;
@@ -73,6 +74,7 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch()
+  const { toast } = useContext(ToastContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -83,6 +85,7 @@ const SignIn = () => {
       navigate('/');
     } catch (err) {
       dispatch(loginFailure());
+      toast(err.response.data.message ,{position:"top-right"});
     }
   };
  
